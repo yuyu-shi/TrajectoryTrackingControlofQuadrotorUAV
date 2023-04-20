@@ -1,5 +1,5 @@
-# -
-欧拉角、四元数、旋转矩阵，迂回现象，自抗扰控制
+# - 四旋翼轨迹跟踪
+
 
 基于双通道控制机制的轨迹跟踪->运行DisturbanceRejectionControlBasedonDualChannelControlMechanism.m文件
 其余控制器的调用都在main.m文件中；通过改变ControllerSelectFlag来选择要运行那个控制器。attFlag表示姿态旋转，R为旋转矩阵，Q为四元数
