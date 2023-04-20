@@ -190,12 +190,14 @@ myplot3({d3.pd,d3.pdhat,d3.p},[5 14 13], {'-','-','--'});
 legend({'$$\textit{\textbf{p}}_d$$','$$\hat{\textit{\textbf{p}}}_d$$','$$\textit{\textbf{p}}$$'},'interpreter','latex','FontSize', FigFontSize);
 
 buf = FontSize;
+buf1 = LineWide;
 FontSize = 8;
+LineWide = 1;
 myfigure();
 for i = 1:3
     for j = 1:3
         subplot(3,3,3*(i-1)+j)
-        myplot([d3.zp(i,:);d3.zphat(i, :)], [14 13], {'-','--'}, ['z_{p',num2str(i),num2str(j),'}']);
+        myplot([d3.zp(3*(i-1)+j,:);d3.zphat(3*(i-1)+j, :)], [14 13], {'-','--'}, ['z_{p',num2str(i),num2str(j),'}']);
     end
 end
 legend({'$$\textit{\textbf{z}}_{pi},i=1,2,3$$','$$\hat{\textit{\textbf{z}}}_{pi},i=1,2,3$$'},'interpreter','latex','FontSize', FigFontSize);
@@ -204,12 +206,12 @@ myfigure();
 for i = 1:3
     for j = 1:3
         subplot(3,3,3*(i-1)+j)
-        myplot([d3.zg(i,:);d3.zghat(i, :)], [14 13], {'-','--'}, ['z_{g',num2str(i),num2str(j),'}']);
+        myplot([d3.zg(3*(i-1)+j,:);d3.zghat(3*(i-1)+j, :)], [14 13], {'-','--'}, ['z_{g',num2str(i),num2str(j),'}']);
     end
 end
 legend({'$$\textit{\textbf{z}}_{gi}, i=1,2,3$$','$$\hat{\textit{\textbf{z}}}_{gi}, i=1,2,3$$'},'interpreter','latex','FontSize', FigFontSize);
 FontSize = buf;
-
+LineWide = buf1;
 %% Soft
 FigureCount = 50;
 myfigure();

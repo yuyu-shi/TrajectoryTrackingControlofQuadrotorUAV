@@ -37,15 +37,13 @@ function [gtilde, G, GInv, omegatilde, A, omegadbar, data] = GibbsVector(t, pose
 end
 
 function [pose, Rd1d, Rd2d, data] = desirePose(t, Fd0, psid, attFlag)
-%     global m g e3 ;
-    persistent Fd0hat;
+
+    persistent Fd0hat sig QLast kq;
     if isempty(Fd0hat)
         Fd0hat = zeros(3,3);
         Fd0hat(:, 1) = Fd0;% 记录初值
     end
-%     if t == 0
-%         Fd0hat(:, 1) = Fd0;
-%     end
+
     Fd = Fd0hat(:, 1);
     Fd1d = Fd0hat(:, 2);
     Fd2d = Fd0hat(:, 3);
@@ -53,11 +51,6 @@ function [pose, Rd1d, Rd2d, data] = desirePose(t, Fd0, psid, attFlag)
         Fd0hat(i,:) = Smoother(Fd0(i), Fd0hat(i,:)', t, [500,500,0.0])';
     end
     fd = norm(Fd);
-%     if t<=0
-%     t
-%     Fd0hat
-% 
-%     end
     
     bd = [cos(psid(1)); sin(psid(1)); 0];
     bd1d = psid(2) * [-sin(psid(1)); cos(psid(1)); 0];
@@ -78,14 +71,27 @@ function [pose, Rd1d, Rd2d, data] = desirePose(t, Fd0, psid, attFlag)
     Rd = [b1d, b2d, b3d];
     Rd1d = [b1d1d, b2d1d, b3d1d];
     Rd2d = [b1d2d, b2d2d, b3d2d];
-%     Rd(:, 1) = Rd(:, 1) / norm(Rd(:, 1));
     if attFlag == 'Q'
+        if isempty(sig)
+           sig = 1; 
+           QLast = [1; 0; 0; 0];
+           kq = 0.5;
+        end
         pose = 0.5 * [sqrt(abs(1 + Rd(1,1) + Rd(2,2) + Rd(3,3)));
                       sign(Rd(3,2) - Rd(2,3)) * sqrt(abs(1 + Rd(1,1) - Rd(2,2) - Rd(3,3)));
                       sign(Rd(1,3) - Rd(3,1)) * sqrt(abs(1 - Rd(1,1) + Rd(2,2) - Rd(3,3)));
                       sign(Rd(2,1) - Rd(1,2)) * sqrt(abs(1 - Rd(1,1) - Rd(2,2) + Rd(3,3)))];
                   % 绝对值是为了防止由计算误差引起的微小负数带来的影响
         pose = pose/norm(pose);
+        
+        % 变号检测  仅在特技飞行时可能用到，即当qd0可能为0时有必要
+        if abs(pose(1)*QLast(1) + pose(2:4)'*QLast(2:4)) <1-kq
+            sig = -sig;
+        end
+        QLast = pose;
+        pose = sig * pose;
+        %结束
+        
     elseif attFlag == 'R'
         pose = Rd;
     end
