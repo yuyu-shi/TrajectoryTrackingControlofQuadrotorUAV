@@ -1,3 +1,4 @@
+
 function DisturbanceRejectionControlBasedonDualChannelControlMechanism
 
 clear all;
@@ -76,52 +77,36 @@ end
     varsigma = zeros(1, length);
     e = zeros(1, length);
 % ¹ì¼£  
-    for ti = 1 : Tbreak
-        pd(:,1,ti) = [-0.2 * t(ti) - 0.5;
-                      0.05 * t(ti) - 0.2;
-                      -0.5 * t(ti) - 1];
-        pd(:,2,ti) = [-0.2;
-                      0.05;
-                      -0.5];       
-        psid(1, 1, ti) = t(ti) / 6 - 1;
-        psid(1, 2, ti) = 1 / 6;
-
-    end
-    for ti = Tbreak + 1 : length
-        pd(:,1,ti) = [3.5 / pi * cos((t(ti) - t(Tbreak)) * 0.2 * pi) - 3.5 / pi - 1.9;
-                      3.5 / pi * sin((t(ti) - t(Tbreak)) * 0.2 * pi) + t(Tbreak) / 20 - 0.2;
-                      -1.5 * log(t(ti) - t(Tbreak) + 1) - 0.5 * t(Tbreak) - 1];
-        pd(:,2,ti) = [-0.7 * sin((t(ti) - t(Tbreak)) * 0.2 * pi);
-                      0.7 * cos((t(ti) - t(Tbreak)) * 0.2 * pi);
-                      -1.5 * (t(ti) - t(Tbreak) + 1)^-1];
-        pd(:,3,ti) = [-0.14 * pi * cos((t(ti) - t(Tbreak)) * 0.2 * pi);
-                      -0.14 * pi * sin((t(ti) - t(Tbreak)) * 0.2 * pi);
-                      1.5 * (t(ti) - t(Tbreak) + 1)^-2]; 
-        pd(:,4,ti) = [0.028 * pi^2 * sin((t(ti) - t(Tbreak)) * 0.2 * pi);
-                      -0.028 * pi^2 * cos((t(ti) - t(Tbreak)) * 0.2 * pi);
-                      -3 * (t(ti) - t(Tbreak) + 1)^-3];
-        pd(:,5,ti) = [0.0056 * pi^3 * cos((t(ti) - t(Tbreak)) * 0.2 * pi);
+    for ti = 1 : length
+        pd(:,1,ti) = [3.5 / pi * cos((t(ti)) * 0.2 * pi);
+                      3.5 / pi * sin((t(ti)) * 0.2 * pi);
+                      -1.5 * log(t(ti) + 1) - 1];
+        pd(:,2,ti) = [-0.7 * sin((t(ti)) * 0.2 * pi);
+                      0.7 * cos((t(ti)) * 0.2 * pi);
+                      -1.5 * (t(ti) + 1)^-1];
+        pd(:,3,ti) = [-0.14 * pi * cos((t(ti)) * 0.2 * pi);
+                      -0.14 * pi * sin((t(ti)) * 0.2 * pi);
+                      1.5 * (t(ti) + 1)^-2]; 
+        pd(:,4,ti) = [0.028 * pi^2 * sin((t(ti)) * 0.2 * pi);
+                      -0.028 * pi^2 * cos((t(ti)) * 0.2 * pi);
+                      -3 * (t(ti) + 1)^-3];
+        pd(:,5,ti) = [0.0056 * pi^3 * cos((t(ti)) * 0.2 * pi);
                       0.0056 * pi^3 * sin((t(ti) - t(Tbreak)) * 0.2 * pi);
                       9 * (t(ti) - t(Tbreak) + 1)^-4];
-        psid(1,1,ti) = pi * sin(t(ti) - t(Tbreak)) / 10 + t(Tbreak) / 6 - 1;
-        psid(1,2,ti) = pi * cos(t(ti) - t(Tbreak)) / 10;
-        psid(1,3,ti) = -pi * sin(t(ti) - t(Tbreak)) / 10;
-        psid(1,4,ti) = -pi * cos(t(ti) - t(Tbreak)) / 10;
-        psid(1,5,ti) = pi * sin(t(ti) - t(Tbreak)) / 10;
+        psid(1,1,ti) = pi * sin(t(ti)) / 10 - 1;
+        psid(1,2,ti) = pi * cos(t(ti)) / 10;
+        psid(1,3,ti) = -pi * sin(t(ti)) / 10;
+        psid(1,4,ti) = -pi * cos(t(ti)) / 10;
+        psid(1,5,ti) = pi * sin(t(ti)) / 10;
     end
 % ¹ì¼£Æ½»¬
-para = [300,3.5,1.2];
+para = [300,3.5,1];
 % para = [300,10,5];
     for i = 1 : times
-        if i == 1 || i == Tbreak + 1
-            tk = i;
-%             eXd = (abs(pd(:, :, tk) - pdhat(:, :, tk)) * w);     
-%             ePsid = (abs(psid(:, :, tk) - psidhat(:, :, tk)) * w);
-        end
         for n = 1 : 3
-            pdhat(n, :, i+1) = Smoother(pd(n, 1, i),  pdhat(n, :, i)', (i - tk) * dt, para)';
+            pdhat(n, :, i+1) = Smoother(pd(n, 1, i),  pdhat(n, :, i)', (i - 1) * dt, para)';
         end
-        psidhat(:, :, i+1) = Smoother(psid(:, 1, i), psidhat(:, :, i)', (i - tk) * dt, para)';
+        psidhat(:, :, i+1) = Smoother(psid(:, 1, i), psidhat(:, :, i)', (i - 1) * dt, para)';
     end
 
 % ¹ì¼£¸ú×Ù               
@@ -303,8 +288,8 @@ function [f, tau, varsigma, dfhat, dtauhat, TriggerFlag] = DualChannelController
     global he0 Omegae deltae0 C CInv J JInv g m e3 dt I Te;
     persistent epsilon Gammatau Gammaf  Kp Kv Kl Komega k1 k2 k3 S32 S23 I32 varrhotau varrhof T ethresholdup ethresholddown sigma;
     if isempty(epsilon) 
-        ethresholdup = 0.009;
-        ethresholddown = 0.008;
+        ethresholdup = 0.012;
+        ethresholddown = 0.01;
         he0 = 5;
         Omegae = 30;
         deltae0 = 0.2;
