@@ -144,10 +144,10 @@ end
 for i = 1 : times
 
     if attFlag == 'R'
-        [f(1,i), tau(:,i), state] = Controller(t(i), p(:, i), v(:, i), R(:,:,i), omega(:,i), pdhat(:,:,i), psidhat(:,i), attFlag, enumA, enumR);
+        [f(1,i), tau(:,i), state] = Controller(t(i), p(:, i), v(:, i), R(:,:,i), omega(:,i), pdhat(:,:,i), psidhat(:,i), attFlag, enumR, enumA);
         [p(:, i+1), v(:, i+1), R(:,:,i+1), omega(:,i+1)] = QuadrotorRotationMatrixModel(p(:,i), v(:,i), R(:,:,i), omega(:,i), f(1,i), tau(:,i), df(:,i), dtau(:,i));
     elseif attFlag == 'Q'
-        [f(1,i), tau(:,i), state] = Controller(t(i), p(:, i), v(:, i), Q(:,i), omega(:,i), pdhat(:,:,i), psidhat(:,i), attFlag, enumA, enumR);
+        [f(1,i), tau(:,i), state] = Controller(t(i), p(:, i), v(:, i), Q(:,i), omega(:,i), pdhat(:,:,i), psidhat(:,i), attFlag, enumR, enumA);
         [p(:, i+1), v(:, i+1), Q(:,i+1), omega(:,i+1)] = QuadrotorQuaternionModel(p(:,i), v(:,i), Q(:,i), omega(:,i), f(:,i), tau(:,i), df(:,i), dtau(:,i));
     end
     ptilde(:,i) = state{1};
@@ -174,9 +174,9 @@ for i = 1 : times
 end
 i = length;
 if attFlag == 'R'
-    [f(1,i), tau(:,i), state] = Controller(t(i), p(:, i), v(:, i), R(:,:,i), omega(:,i), pdhat(:,:,i), psidhat(:,i), attFlag, enumA, enumR);
+    [f(1,i), tau(:,i), state] = Controller(t(i), p(:, i), v(:, i), R(:,:,i), omega(:,i), pdhat(:,:,i), psidhat(:,i), attFlag, enumR, enumA);
 elseif attFlag == 'Q'
-    [f(1,i), tau(:,i), state] = Controller(t(i), p(:, i), v(:, i), Q(:,i), omega(:,i), pdhat(:,:,i), psidhat(:,i), attFlag, enumA, enumR);
+    [f(1,i), tau(:,i), state] = Controller(t(i), p(:, i), v(:, i), Q(:,i), omega(:,i), pdhat(:,:,i), psidhat(:,i), attFlag, enumR, enumA);
 end
 ptilde(:,i) = state{1};
 varthetatilde(:,i) = state{2};
