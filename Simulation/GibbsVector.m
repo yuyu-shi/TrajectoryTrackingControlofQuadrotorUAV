@@ -7,7 +7,7 @@ function [gtilde, G, GInv, omegatilde, A, omegadbar, data] = GibbsVector(t, pose
     Rd = ToSO3(desPose, attFlag);
     omegad = so3R3(Rd' * Rd1d);
     omegad1d = so3R3(Rd1d'*Rd1d + Rd'*Rd2d);
-
+Rd1d'*Rd1d + Rd'*Rd2d
     if enumR == enuml
         Rtilde = R * Rd';
         if enumA == enuml
@@ -64,7 +64,7 @@ function [pose, Rd1d, Rd2d, data] = desirePose(t, Fd0, psid, attFlag)
     b2d2d = -((2*b2d1d*b2d'+b2d*b2d1d')*(cross(b3d1d,bd)+cross(b3d,bd1d)) + R3so3(b2d)^2*(cross(b3d2d,bd)+2*cross(b3d1d,bd1d)+cross(b3d,bd2d)))/norm(cross(b3d,bd));
     b1d = cross(b2d, b3d);
     b1d1d = cross(b2d1d,b3d) + cross(b2d,b3d1d);
-    b1d2d = cross(b2d2d,b3d) + 2*cross(b3d1d,bd1d) + cross(b3d,bd2d);
+    b1d2d = cross(b2d2d,b3d) + 2*cross(b2d1d,b3d1d) + cross(b2d,b3d2d);
     fd1d = b3d'*Fd1d;
     data{1} = Fd;
     data{2} = fd1d;
