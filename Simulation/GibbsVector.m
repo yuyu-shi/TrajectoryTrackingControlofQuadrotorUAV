@@ -38,10 +38,10 @@ end
 
 function [pose, Rd1d, Rd2d, data] = desirePose(t, Fd0, psid, attFlag)
 
-    persistent Fd0hat sig QLast kq;
+    persistent Fd0hat sig QLast kq dQLast dt;
     if isempty(Fd0hat)
         Fd0hat = zeros(3,3);
-        Fd0hat(:, 1) = Fd0;% ¼ÇÂ¼³õÖµ
+        Fd0hat(:, 1) = Fd0;% è®°å½•åˆå€¼
     end
 
     Fd = Fd0hat(:, 1);
@@ -76,21 +76,27 @@ function [pose, Rd1d, Rd2d, data] = desirePose(t, Fd0, psid, attFlag)
            sig = 1; 
            QLast = [1; 0; 0; 0];
            kq = 0.5;
+	   dQLast = [1; 0; 0; 0];
+    	   dt = 0.001;
         end
         pose = 0.5 * [sqrt(abs(1 + Rd(1,1) + Rd(2,2) + Rd(3,3)));
                       sign(Rd(3,2) - Rd(2,3)) * sqrt(abs(1 + Rd(1,1) - Rd(2,2) - Rd(3,3)));
                       sign(Rd(1,3) - Rd(3,1)) * sqrt(abs(1 - Rd(1,1) + Rd(2,2) - Rd(3,3)));
                       sign(Rd(2,1) - Rd(1,2)) * sqrt(abs(1 - Rd(1,1) - Rd(2,2) + Rd(3,3)))];
-                  % ¾ø¶ÔÖµÊÇÎªÁË·ÀÖ¹ÓÉ¼ÆËãÎó²îÒıÆğµÄÎ¢Ğ¡¸ºÊı´øÀ´µÄÓ°Ïì
-        pose = pose/norm(pose);
+                  % ç»å¯¹å€¼æ˜¯ä¸ºäº†é˜²æ­¢ç”±è®¡ç®—è¯¯å·®å¼•èµ·çš„å¾®å°è´Ÿæ•°å¸¦æ¥çš„å½±å“
+        pose = sig * pose / norm(pose);
         
-        % ±äºÅ¼ì²â  ½öÔÚÌØ¼¼·ÉĞĞÊ±¿ÉÄÜÓÃµ½£¬¼´µ±qd0¿ÉÄÜÎª0Ê±ÓĞ±ØÒª
-        if abs(pose(1)*QLast(1) + pose(2:4)'*QLast(2:4)) <1-kq
+        % å˜å·æ£€æµ‹  ä»…åœ¨ç‰¹æŠ€é£è¡Œæ—¶å¯èƒ½ç”¨åˆ°ï¼Œå³å½“qd0å¯èƒ½ä¸º0æ—¶æœ‰å¿…è¦
+	dQ = (pose - QLast) / dt
+ 	ddQ = abs(dQ - dQLast)
+        if min(diag(dQ) * dQLast) < 0 && max(ddQ) > kq
             sig = -sig;
+	    pose = -pose;
+     	    dQ = (pose - QLast) / dt
         end
         QLast = pose;
-        pose = sig * pose;
-        %½áÊø
+	dQLast = dQ;
+        %ç»“æŸ
         
     elseif attFlag == 'R'
         pose = Rd;
