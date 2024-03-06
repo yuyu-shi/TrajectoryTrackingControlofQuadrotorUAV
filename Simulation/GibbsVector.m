@@ -1,6 +1,6 @@
 function [gtilde, G, GInv, omegatilde, A, omegadbar, data] = GibbsVector(t, pose, Fd, psid, omega, enumR, enumA, attFlag)
     global enuml enumr I;
-
+    
 
     [desPose, Rd1d, Rd2d, data] = desirePose(t, Fd, psid, attFlag);
     R = ToSO3(pose, attFlag);
@@ -37,8 +37,8 @@ Rd1d'*Rd1d + Rd'*Rd2d
 end
 
 function [pose, Rd1d, Rd2d, data] = desirePose(t, Fd0, psid, attFlag)
-
-    persistent Fd0hat sig QLast kq dQLast dt;
+    global dt;
+    persistent Fd0hat sig QLast kq dQLast;
     if isempty(Fd0hat)
         Fd0hat = zeros(3,3);
         Fd0hat(:, 1) = Fd0;% 记录初值
@@ -77,7 +77,6 @@ function [pose, Rd1d, Rd2d, data] = desirePose(t, Fd0, psid, attFlag)
            QLast = [1; 0; 0; 0];
            kq = 0.5;
 	   dQLast = [1; 0; 0; 0];
-    	   dt = 0.001;
         end
         pose = 0.5 * [sqrt(abs(1 + Rd(1,1) + Rd(2,2) + Rd(3,3)));
                       sign(Rd(3,2) - Rd(2,3)) * sqrt(abs(1 + Rd(1,1) - Rd(2,2) - Rd(3,3)));
