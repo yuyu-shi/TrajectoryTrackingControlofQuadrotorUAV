@@ -9,4 +9,13 @@
 
 若要在程序运行时查看结果或者要对程序进行调试，请将DisturbanceRejectionControlBasedonDualChannelControlMechanism和main中的全局变量debugFlag置为true
 
+英文版文献
+Zhang, Sujie, Xinyu Shi, Xingru Chen and Xiuyu He. “Trajectory Tracking Control Based on Generalized Rodrigues Parameter for Underactuated VTOL UAVs.” Journal of Aerospace Engineering (2024), to be published.
 
+@article{Zhang2024TrajectoryTC,
+  title={Trajectory Tracking Control Based on Generalized Rodrigues Parameter for Underactuated VTOL UAVs},
+  author={Sujie Zhang and Xinyu Shi and Xingru Chen and Xiuyu He},
+  journal={Journal of Aerospace Engineering},
+  year={2024},
+  url={https://api.semanticscholar.org/CorpusID:272674005}
+}
